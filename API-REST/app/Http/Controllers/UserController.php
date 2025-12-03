@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UserRequest;
 
 class UserController extends Controller
 {
@@ -19,17 +20,12 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $data = $request->validate([
-           'name' => 'required|string|max:255',
-           'email' => 'required|email|unique:users,email',
-           'password' => 'required|confirmed|min:8',
-        ]);
-
+      
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
+            'name' => $request['name'],
+            'email' => $request['email'],
             'password' => Hash::make($request->password), // Es una clase de Laravel que se usa para encriptar la contraseña en la base de dats
         ]);
 
