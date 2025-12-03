@@ -5,12 +5,12 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Http\Requests\UserRequest;
 
 class CreateUserTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
+    use RefreshDatabase; // para aplicar migraciones y que se limpie entre test
+    
     public function test_user_can_register(): void
     {
         $data = [
