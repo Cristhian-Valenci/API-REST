@@ -44,7 +44,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::find($id);
+        $user = User::findOrFail($id); // pongo el OrFail para que si el id es null, no me mande el 200 y mande el 404.
 
         return response()->json($user,200);
     }
