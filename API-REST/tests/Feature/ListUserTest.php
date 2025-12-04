@@ -13,14 +13,16 @@ use App\Models\User;
 class ListUserTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     public function test_user_can_list(): void
     {
-      $users = User::factory()->count(2)->create();
+     
+        $users = User::factory()->count(2)->create();
 
-      $response = $this->getJson('/api/users');
-      $response->assertStatus(200);
-      $response->assertJsonCount(2);
+        $response = $this->getJson('/api/users');
+      
+        $response->assertStatus(200)
+                 ->assertJsonCount(2);
 
     }
 }
