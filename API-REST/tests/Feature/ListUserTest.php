@@ -25,4 +25,13 @@ class ListUserTest extends TestCase
                  ->assertJsonCount(2);
 
     }
+
+    public function test_user_cannot_list_when_no_users_exists(): void 
+    {
+        
+        $response = $this->getJson('/api/users');
+
+        $response->assertStatus(204);
+
+    }
 }
