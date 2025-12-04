@@ -24,4 +24,16 @@ class ShowUserTest extends TestCase
                 ]);
 
     }
+
+    public function test_user_cannot_show_because_id_not_exist(): void
+    {
+        $nonExistenId = 9999;
+
+        $response = $this->getJson("/api/users/{$nonExistenId}");
+
+        $response->assertStatus(404);
+        
+    }
+
+ 
 }
