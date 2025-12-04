@@ -14,7 +14,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+
+        if($users->isEmpty()) {
+            return response()->json([],204);
+        }
+
+        return response()->json($users,200);
     }
 
     /**
@@ -38,7 +44,9 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = User::findOrFail($id); // pongo el OrFail para que si el id es null, no me mande el 200 y mande el 404.
+
+        return response()->json($user,200);
     }
 
     /**
