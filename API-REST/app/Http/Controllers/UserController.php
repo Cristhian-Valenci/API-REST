@@ -16,6 +16,10 @@ class UserController extends Controller
     {
         $users = User::all();
 
+        if($users->isEmpty()) {
+            return response()->json([],204);
+        }
+
         return response()->json($users,200);
     }
 
