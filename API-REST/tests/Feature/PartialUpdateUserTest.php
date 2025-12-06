@@ -82,4 +82,22 @@ class PartialUpdateUserTest extends TestCase
 
     }
 
+    public function test_user_cannot_patch_with_invalid_data(): void
+    {
+        $user = User::factory()->create();
+
+        $data = [
+           'name' => '',                       
+           'email' => 'cemail-no-valid',      
+           'password' => 'short',              
+           'password_confirmation' => 'different'   
+        ];
+
+        $response = $this->patchJson("/api/users/{$user->id}", $data);
+
+        $response->assertStatus(422)
+                ->assertJsonValidationErrors(['name', 'email', 'password']);
+    }
+
+
 }
