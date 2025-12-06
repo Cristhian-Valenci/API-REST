@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 
 class UpdateUserTest extends TestCase
@@ -17,24 +18,30 @@ class UpdateUserTest extends TestCase
         $user = User::factory()->create();
 
         $data = [
-            'name' => 'Nombre Actualizado',
-            'email' => 'nuevo@email.com'
+            'name' => 'Update name',
+            'email' => 'new@email.com',
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword'
         ];
 
         $response = $this->putJson("/api/users/{$user->id}", $data);
 
         $response ->assertStatus(200)
                   ->assertJsonFragment([
-                    'name' => 'Nombre Actualizado',
-                    'email' => 'nuevo@email.com',
-                  ]);
+                    'name' => 'Update name',
+                    'email' => 'new@email.com',
+                ]);
 
     
         $this->assertDatabaseHas('users', [
             'id'    => $user->id,
-            'name'  => 'Nombre Actualizado',
-            'email' => 'nuevo@email.com',
+            'name'  => 'Update name',
+            'email' => 'new@email.com',
+          
         ]);
+
+        $this->assertTrue(Hash::check('newpassword', $user->fresh()->password));
+             
 
        
     }
