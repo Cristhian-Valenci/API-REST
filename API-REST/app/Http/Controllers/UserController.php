@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\PartialUpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -52,9 +54,33 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUserRequest $request, string $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $user->update([
+           'name'  => $request->name,
+           'email' => $request->email,
+           'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json($user, 200);
+
+    }
+
+    public function partial(PartialUpdateUserRequest $request, string $id)
+    {
+        $user = User::findOrFail($id);
+
+        $data = $request->only(['name', 'email', 'password']);
+
+        if (isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        }
+
+         $user->update($data);
+
+         return response()->json($user, 200);
     }
 
     /**
