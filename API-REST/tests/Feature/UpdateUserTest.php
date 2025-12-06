@@ -42,7 +42,22 @@ class UpdateUserTest extends TestCase
 
         $this->assertTrue(Hash::check('newpassword', $user->fresh()->password));
              
+    }
 
-       
+    public function test_user_cannot_update_with_invalid_data(): void
+    {
+        $user = User::factory()->create();
+
+        $data = [
+           'name' => '',                       
+           'email' => 'invalid-email',         
+           'password' => 'short',             
+           'password_confirmation' => 'different',
+        ];
+
+        $response = $this->putJson("/api/users/{$user->id}", $data);
+
+         $response->assertStatus(422)
+                  ->assertJsonValidationErrors(['name', 'email', 'password']);
     }
 }
