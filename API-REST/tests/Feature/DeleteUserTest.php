@@ -25,4 +25,13 @@ class DeleteUserTest extends TestCase
             'id' => $user->id,
         ]);
     }
+
+    public function test_cannot_delete_non_existent_user(): void
+    {
+        $nonExistentId = User::max('id') + 1;
+
+        $response = $this->deleteJson("/api/users/{$nonExistentId}");
+
+        $response->assertStatus(404);
+    }
 }
