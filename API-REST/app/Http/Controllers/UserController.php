@@ -67,6 +67,21 @@ class UserController extends Controller
 
     }
 
+    public function partial(Request $request, string $id)
+    {
+        $user = User::findOrFail($id);
+
+        $data = $request->only(['name', 'email', 'password']);
+
+        if (isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        }
+
+         $user->update($data);
+
+         return response()->json($user, 200);
+    }
+
     /**
      * Remove the specified resource from storage.
      */

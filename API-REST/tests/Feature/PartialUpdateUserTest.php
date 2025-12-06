@@ -10,9 +10,8 @@ use Illuminate\Support\Facades\Hash;
 
 class PartialUpdateUserTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
+    use RefreshDatabase;
+    
     public function test_user_can_patch_name_only(): void
     {
        $user = User::factory()->create([
