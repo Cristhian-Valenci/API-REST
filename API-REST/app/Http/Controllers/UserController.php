@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\PartialUpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -67,7 +68,7 @@ class UserController extends Controller
 
     }
 
-    public function partial(Request $request, string $id)
+    public function partial(PartialUpdateUserRequest $request, string $id)
     {
         $user = User::findOrFail($id);
 
