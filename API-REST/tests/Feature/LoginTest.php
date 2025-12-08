@@ -65,5 +65,35 @@ class LoginTest extends TestCase
         
         $this->assertEquals('Cristhian', $response->json('data.name'));
     }
+
+    #[Test]
+    public function user_cannot_login_with_wrong_password()
+    {
+        $user = User::factory()->create([
+           'name' => 'Cristhian',
+           'email' => 'cristhian@example.com',
+           'password' => bcrypt('password123'),
+        ]);
+
+    
+        Http::fake();
+
+        $response = $this->postJson('/api/login', [
+           'email' => $user->email,
+           'password' => 'wrong-password',
+        ]);
+
+        // Verificamos que la respuesta sea 401
+        $response->assertStatus(401);
+
+        // Verificamos la estructura de respuesta para error
+        $response->assertJson([
+           'success' => true,
+           'statusCode' => 401,
+           'message' => 'Unauthorized.',
+           'errors' => 'Unauthorized',
+        ]);
+    }
+
 }
 
