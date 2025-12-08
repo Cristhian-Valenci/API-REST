@@ -95,5 +95,24 @@ class LoginTest extends TestCase
         ]);
     }
 
+    #[Test]
+    public function user_cannot_login_with_empty_password()
+    {
+        $user = User::factory()->create([
+           'email' => 'cristhian@example.com',
+           'password' => bcrypt('password123'),
+        ]);
+
+        Http::fake();
+
+        $response = $this->postJson('/api/login', [
+           'email' => $user->email,
+           'password' => '',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['password']);
+    }
+
 }
 
