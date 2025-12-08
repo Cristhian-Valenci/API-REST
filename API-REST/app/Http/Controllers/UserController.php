@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\UserRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Http\Requests\PartialUpdateUserRequest;
+use App\Http\Requests\User\UserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\User\PartialUpdateUserRequest;
 
 class UserController extends Controller
 {
