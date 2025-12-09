@@ -83,10 +83,10 @@ class LoginTest extends TestCase
            'password' => 'wrong-password',
         ]);
 
-        // Verificamos que la respuesta sea 401
+        
         $response->assertStatus(401);
 
-        // Verificamos la estructura de respuesta para error
+        
         $response->assertJson([
            'success' => true,
            'statusCode' => 401,
@@ -117,7 +117,7 @@ class LoginTest extends TestCase
     #[Test]
     public function user_cannot_login_with_unregistered_email()
     {
-        Http::fake(); // No necesitamos Passport aquí
+        Http::fake(); 
 
         $response = $this->postJson('/api/login', [
             'email' => 'noexiste@example.com',
@@ -131,6 +131,25 @@ class LoginTest extends TestCase
                     'message' => 'Unauthorized.',
                     'errors' => 'Unauthorized',
                 ]);
+    }
+
+    #[Test]
+    public function user_cannot_login_with_empty_email()
+    {
+        $user = User::factory()->create([
+            'email' => 'cristhian@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        Http::fake();
+
+        $response = $this->postJson('/api/login', [
+            'email' => '',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(422); 
+        $response->assertJsonValidationErrors(['email']);
     }
 
 }
