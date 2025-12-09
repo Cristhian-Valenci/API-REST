@@ -37,5 +37,14 @@ class MeTest extends TestCase
         $this->assertEquals($user->email, $response->json('data.email'));
     }
 
+        #[Test] //si no está autenticado no va a poder usar el me()
+    public function guest_cannot_access_me_endpoint()
+    {
+        $response = $this->getJson('/api/me');
+
+        $response->assertStatus(401);
+    }
+
+
 
 }
