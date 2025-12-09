@@ -89,6 +89,18 @@ class AuthController extends Controller
             'scope' => '',
         ]);
 
+        $status = $response->status();
+
+        if ($status !== 200) {
+            return response()->json([
+                'success' => false,
+                'statusCode' => $status,
+                'message' => $response->json('message') ?? 'Failed to refresh token.',
+                'data' => $response->json(),
+            ], $status);
+        }
+
+
         return response()->json([
             'success' => true,
             'statusCode' => 200,

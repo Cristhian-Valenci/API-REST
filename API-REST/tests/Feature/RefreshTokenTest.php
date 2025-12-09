@@ -45,4 +45,37 @@ class RefreshTokenTest extends TestCase
 
         $this->assertEquals('new-access-token', $response->json('data.access_token'));
     }
+
+        #[Test]
+    public function user_cannot_refresh_token_if_missing()
+    {
+        $response = $this->postJson('/api/refresh-token', [
+            'refresh_token' => '', //Token vacio
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['refresh_token']);
+    }
+
+        #[Test]
+    public function user_cannot_refresh_token_with_invalid_token()
+    {
+        Http::fake([
+            env('APP_URL') . '/oauth/token' => Http::response([
+                'error' => 'invalid_grant',
+                'message' => 'The refresh token is invalid.'
+            ], 400),
+        ]);
+
+        $response = $this->postJson('/api/refresh-token', [
+            'refresh_token' => 'bad-refresh-token',
+        ]);
+
+        $response->assertStatus(400);
+        $response->assertJson([
+            'success' => false,
+            'statusCode' => 400,
+            'message' => 'The refresh token is invalid.',
+        ]);
+    }
 }
