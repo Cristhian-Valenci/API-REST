@@ -12,3 +12,4 @@ Route::patch('/users/{id}', [UserController::class, 'partial']);
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
