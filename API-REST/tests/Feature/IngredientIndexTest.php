@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Ingredient;
 
+
 class IngredientIndexTest extends TestCase
 {
     use RefreshDatabase;
