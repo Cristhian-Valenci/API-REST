@@ -12,13 +12,13 @@ class IngredientShowTest extends TestCase
 
     public function test_show_returns_ingredient()
     {
-        $ingredient = Ingredient::create(['nombre' => 'Vodka']);
+        $ingredient = Ingredient::create(['name' => 'Vodka']);
 
         $response = $this->getJson("/api/ingredients/{$ingredient->id}");
 
         $response->assertStatus(200)
                  ->assertJsonFragment([
-                     'nombre' => 'Vodka'
+                     'name' => 'Vodka'
                  ]);
     }
 }
