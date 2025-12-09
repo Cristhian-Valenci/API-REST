@@ -31,5 +31,21 @@ class LogoutTest extends TestCase
         $this->assertCount(0, $user->tokens);
     }
 
+        #[Test]
+    public function guest_cannot_logout()
+    {
+        
+        $response = $this->postJson('/api/logout'); //No esta autenticado
+
+       
+        $response->assertStatus(401);
+
+        
+        $response->assertJson([
+            'message' => 'Unauthenticated.',
+        ]);
+    }
+
+
 
 }
