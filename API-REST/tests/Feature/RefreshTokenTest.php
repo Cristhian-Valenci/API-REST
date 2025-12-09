@@ -16,7 +16,7 @@ class RefreshTokenTest extends TestCase
     #[Test]
     public function user_can_refresh_token_successfully()
     {
-        // Simulamos la respuesta de Passport
+        
         Http::fake([
             env('APP_URL') . '/oauth/token' => Http::response([
                 'token_type' => 'Bearer',

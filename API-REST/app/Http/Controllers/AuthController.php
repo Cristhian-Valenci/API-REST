@@ -77,5 +77,20 @@ class AuthController extends Controller
         }
     }
 
+        public function refreshToken()
+    {
+        return response()->json([
+            'success' => true,
+            'statusCode' => 200,
+            'message' => 'Refreshed token.',
+            'data' => [
+                'token_type' => 'Bearer',
+                'expires_in' => 31536000,
+                'access_token' => 'new-access-token',
+                'refresh_token' => 'new-refresh-token',
+            ],
+        ], 200);
+    }
+
 
 }
