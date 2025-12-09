@@ -1,0 +1,51 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+use App\Models\User;
+use PHPUnit\Framework\Attributes\Test;
+use Illuminate\Support\Facades\Http;
+
+
+
+class LogoutTest extends TestCase
+{
+    use RefreshDatabase;
+
+    #[Test]
+    public function authenticated_user_can_logout()
+    {
+        
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user, 'api')
+                         ->postJson('/api/logout');
+
+       
+        $response->assertStatus(204);
+
+       
+        $this->assertCount(0, $user->tokens);
+    }
+
+        #[Test]
+    public function guest_cannot_logout()
+    {
+        
+        $response = $this->postJson('/api/logout'); //No esta autenticado
+
+       
+        $response->assertStatus(401);
+
+        
+        $response->assertJson([
+            'message' => 'Unauthenticated.',
+        ]);
+    }
+
+
+
+}
