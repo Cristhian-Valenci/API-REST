@@ -21,3 +21,4 @@ Route::group(['middleware' => ['auth:api']], function () {
 });
 
 Route::post('/ingredients', [IngredientController::class, 'store']);
+
