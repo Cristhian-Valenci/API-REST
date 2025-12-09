@@ -114,5 +114,24 @@ class LoginTest extends TestCase
         $response->assertJsonValidationErrors(['password']);
     }
 
+    #[Test]
+    public function user_cannot_login_with_unregistered_email()
+    {
+        Http::fake(); // No necesitamos Passport aquí
+
+        $response = $this->postJson('/api/login', [
+            'email' => 'noexiste@example.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(401)
+                ->assertJson([
+                    'success' => true,
+                    'statusCode' => 401,
+                    'message' => 'Unauthorized.',
+                    'errors' => 'Unauthorized',
+                ]);
+    }
+
 }
 
