@@ -152,5 +152,24 @@ class LoginTest extends TestCase
         $response->assertJsonValidationErrors(['email']);
     }
 
+        #[Test]
+    public function user_cannot_login_with_invalid_email_format()
+    {
+        $user = User::factory()->create([
+            'email' => 'cristhian@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        Http::fake();
+
+        $response = $this->postJson('/api/login', [
+            'email' => 'correo-invalido',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(422); // Validación falla por formato
+        $response->assertJsonValidationErrors(['email']);
+    }
+
 }
 
