@@ -26,4 +26,12 @@ class IngredientIndexTest extends TestCase
                  ->assertJsonFragment(['name' => 'Gin']);
     }
 
+    public function test_ingredient_cannot_list_when_no_ingredients_exists()
+    {
+        $response = $this->getJson('/api/ingredients');
+
+        $response->assertStatus(204);
+                
+    }
+
 }
