@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\IngredientController;
 
 Route::post('/users', [UserController::class, 'store'] );
 Route::get('/users', [UserController::class, 'index']);
@@ -18,3 +19,5 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
+
+Route::post('/ingredients', [IngredientController::class, 'store']);

@@ -16,7 +16,9 @@ class IngredientCreateTest extends TestCase
             'name' => 'Vodka',
         ];
 
-        $response = $this->postJson('/ingredients', $payload);
+        
+        $response = $this->postJson('/api/ingredients', $payload);
+
 
         $response->assertStatus(201)
                  ->assertJsonFragment([
