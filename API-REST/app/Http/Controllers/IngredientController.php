@@ -8,6 +8,7 @@ use App\Http\Requests\Ingredient\StoreIngredientRequest;
 
 class IngredientController extends Controller
 {
+   
     public function store(StoreIngredientRequest $request)
     {
         
