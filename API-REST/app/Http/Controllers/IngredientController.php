@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Ingredient;
+use App\Http\Requests\Ingredient\StoreIngredientRequest;
 
 class IngredientController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreIngredientRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
+        
         $ingredient = Ingredient::create([
             'name' => $request->name,
         ]);
