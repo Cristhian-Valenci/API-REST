@@ -109,6 +109,19 @@ class AuthController extends Controller
         ], 200);
     }
 
+        public function me(): JsonResponse
+    {
+
+        $user = auth()->user();
+
+        return response()->json([
+            'success' => true,
+            'statusCode' => 200,
+            'message' => 'Authenticated use info.',
+            'data' => $user,
+        ], 200);
+    }
+
 
 
 }
