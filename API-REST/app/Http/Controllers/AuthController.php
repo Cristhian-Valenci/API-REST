@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\RefreshTokenRequest;
 
 
 class AuthController extends Controller
@@ -77,20 +78,25 @@ class AuthController extends Controller
         }
     }
 
-        public function refreshToken()
+
+    public function refreshToken(RefreshTokenRequest $request): JsonResponse
     {
+        $response = Http::asForm()->post(env('APP_URL') . '/oauth/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $request->refresh_token,
+            'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
+            'client_secret' => env('PASSPORT_PASSWORD_SECRET'),
+            'scope' => '',
+        ]);
+
         return response()->json([
             'success' => true,
             'statusCode' => 200,
             'message' => 'Refreshed token.',
-            'data' => [
-                'token_type' => 'Bearer',
-                'expires_in' => 31536000,
-                'access_token' => 'new-access-token',
-                'refresh_token' => 'new-refresh-token',
-            ],
+            'data' => $response->json(),
         ], 200);
     }
+
 
 
 }
