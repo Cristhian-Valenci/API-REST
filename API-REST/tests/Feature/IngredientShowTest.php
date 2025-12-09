@@ -21,4 +21,14 @@ class IngredientShowTest extends TestCase
                      'name' => 'Vodka'
                  ]);
     }
+
+    public function test_show_for_nonexistent_ingredient()
+    {
+        $response = $this->getJson("/api/ingredients/999");
+
+        $response->assertStatus(404)
+                 ->assertJson([
+                     'message' => 'Ingredient not found'
+                 ]);
+    }
 }
