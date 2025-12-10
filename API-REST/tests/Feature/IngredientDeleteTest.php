@@ -23,4 +23,13 @@ class IngredientDeleteTest extends TestCase
             'id' => $ingredient->id
         ]);
     }
+
+        public function test_delete_non_existing_ingredient()
+    {
+         $nonExistentId = Ingredient::max('id') + 1;
+
+        $response = $this->deleteJson('/api/ingredients/{$nonExistentId}');
+
+        $response->assertStatus(404);
+    }
 }
