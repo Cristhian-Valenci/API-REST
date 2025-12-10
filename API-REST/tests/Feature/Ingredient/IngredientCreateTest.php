@@ -3,10 +3,9 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\User;
 use App\Models\Ingredient;
-
 
 class IngredientCreateTest extends TestCase
 {
@@ -14,13 +13,14 @@ class IngredientCreateTest extends TestCase
 
     public function test_creates_an_ingredient()
     {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
         $payload = [
             'name' => 'Vodka',
         ];
 
-        
         $response = $this->postJson('/api/ingredients', $payload);
-
 
         $response->assertStatus(201)
                  ->assertJsonFragment([
@@ -29,56 +29,68 @@ class IngredientCreateTest extends TestCase
 
         $this->assertDatabaseHas('ingredients', [
             'name' => 'Vodka',
+            'user_id' => $user->id, 
         ]);
     }
 
-        public function test_cannot_create_ingredient_without_name()
+    public function test_cannot_create_ingredient_without_name()
     {
-        $payload = []; 
-        
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $payload = [];
+
         $response = $this->postJson('/api/ingredients', $payload);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['name']);
+                 ->assertJsonValidationErrors(['name']);
     }
 
-        public function test_cannot_create_ingredient_with_name_too_long()
+    public function test_cannot_create_ingredient_with_name_too_long()
     {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
         $payload = [
-            'nombre' => str_repeat('a', 101), 
+            'name' => str_repeat('a', 101),
         ];
-        
+
         $response = $this->postJson('/api/ingredients', $payload);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['name']);
+                 ->assertJsonValidationErrors(['name']);
     }
 
-        public function test_cannot_create_ingredient_with_invalid_characters()
+    public function test_cannot_create_ingredient_with_invalid_characters()
     {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
         $payload = [
-            'nombre' => 'Vodka123!',
+            'name' => 'Vodka123!',
         ];
-        
+
         $response = $this->postJson('/api/ingredients', $payload);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['name']);
+                 ->assertJsonValidationErrors(['name']);
     }
 
-        public function test_cannot_create_ingredient_with_duplicate_name()
+    public function test_cannot_create_ingredient_with_duplicate_name()
     {
-        
-        Ingredient::create(['name' => 'Vodka']);
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Ingredient::create([
+            'name' => 'Vodka',
+            'user_id' => $user->id,
+        ]);
 
         $payload = ['name' => 'Vodka'];
 
         $response = $this->postJson('/api/ingredients', $payload);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['name']);
+                 ->assertJsonValidationErrors(['name']);
     }
-
-
 }
-
