@@ -43,4 +43,22 @@ class IngredientController extends Controller
 
         return response()->json($ingredient, 200);
     }
+
+        public function update(Request $request, int $id): JsonResponse
+    {
+        $ingredient = Ingredient::find($id);
+
+        if (!$ingredient) {
+            return response()->json([
+                'message' => 'Ingredient not found'
+            ], 404);
+        }
+
+        $ingredient->update([
+            'name' => $request->name,
+        ]);
+
+        return response()->json($ingredient, 200);
+    }
+
 }
