@@ -5,6 +5,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IngredientController;
 
+
+
 Route::post('/users', [UserController::class, 'store'] );
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']);
@@ -24,4 +26,6 @@ Route::post('/ingredients', [IngredientController::class, 'store']);
 Route::get('/ingredients', [IngredientController::class, 'index']);
 Route::get('/ingredients/{id}', [IngredientController::class, 'show']);
 Route::put('/ingredients/{id}', [IngredientController::class, 'update']);
+Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
+
 
