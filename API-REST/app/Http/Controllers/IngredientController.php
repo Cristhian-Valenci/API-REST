@@ -14,6 +14,7 @@ class IngredientController extends Controller
         
         $ingredient = Ingredient::create([
             'name' => $request->name,
+            'user_id' => auth()->id(),
         ]);
 
         return response()->json($ingredient, 201);
