@@ -29,7 +29,7 @@ class IngredientCreateTest extends TestCase
 
         $this->assertDatabaseHas('ingredients', [
             'name' => 'Vodka',
-            'user_id' => $user->id, // <--- importante
+            'user_id' => $user->id, 
         ]);
     }
 
