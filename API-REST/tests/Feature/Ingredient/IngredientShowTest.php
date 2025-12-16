@@ -2,9 +2,10 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Ingredient;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
 
 class IngredientShowTest extends TestCase
 {
@@ -12,23 +13,28 @@ class IngredientShowTest extends TestCase
 
     public function test_show_returns_ingredient()
     {
-        $ingredient = Ingredient::create(['name' => 'Vodka']);
+        $user = User::factory()->create();
+       
+
+        $ingredient = Ingredient::create([
+            'name' => 'Vodka',
+            'user_id' => $user->id
+        ]);
 
         $response = $this->getJson("/api/ingredients/{$ingredient->id}");
 
         $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'name' => 'Vodka'
-                 ]);
+                 ->assertJsonFragment(['name' => 'Vodka']);
     }
 
     public function test_show_for_nonexistent_ingredient()
     {
+        $user = User::factory()->create();
+        
+
         $response = $this->getJson("/api/ingredients/999");
 
         $response->assertStatus(404)
-                 ->assertJson([
-                     'message' => 'Ingredient not found'
-                 ]);
+                 ->assertJson(['message' => 'Ingredient not found']);
     }
 }
