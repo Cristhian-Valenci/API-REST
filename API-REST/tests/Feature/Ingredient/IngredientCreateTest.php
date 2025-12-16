@@ -14,7 +14,7 @@ class IngredientCreateTest extends TestCase
     public function test_creates_an_ingredient()
     {
         $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->actingAs($user, 'api');
 
         $payload = [
             'name' => 'Vodka',
@@ -36,7 +36,7 @@ class IngredientCreateTest extends TestCase
     public function test_cannot_create_ingredient_without_name()
     {
         $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->actingAs($user, 'api');
 
         $payload = [];
 
@@ -49,7 +49,7 @@ class IngredientCreateTest extends TestCase
     public function test_cannot_create_ingredient_with_name_too_long()
     {
         $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->actingAs($user, 'api');
 
         $payload = [
             'name' => str_repeat('a', 101),
@@ -64,7 +64,7 @@ class IngredientCreateTest extends TestCase
     public function test_cannot_create_ingredient_with_invalid_characters()
     {
         $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->actingAs($user, 'api');
 
         $payload = [
             'name' => 'Vodka123!',
@@ -79,7 +79,7 @@ class IngredientCreateTest extends TestCase
     public function test_cannot_create_ingredient_with_duplicate_name()
     {
         $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->actingAs($user, 'api');
 
         Ingredient::create([
             'name' => 'Vodka',
