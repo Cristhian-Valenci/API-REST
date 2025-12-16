@@ -25,7 +25,10 @@ Route::group(['middleware' => ['auth:api']], function () {
 Route::post('/ingredients', [IngredientController::class, 'store']);
 Route::get('/ingredients', [IngredientController::class, 'index']);
 Route::get('/ingredients/{id}', [IngredientController::class, 'show']);
-Route::put('/ingredients/{id}', [IngredientController::class, 'update']);
+Route::middleware('auth:api')->group(function () {
+    Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update']);
+});
+
 Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
 
 
