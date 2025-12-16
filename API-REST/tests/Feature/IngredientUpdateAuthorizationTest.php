@@ -8,7 +8,7 @@ use App\Models\Cocktail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class IngredientUpdateTest extends TestCase
+class IngredientUpdateAuthorizationTest extends TestCase
 {
     use RefreshDatabase;
 
