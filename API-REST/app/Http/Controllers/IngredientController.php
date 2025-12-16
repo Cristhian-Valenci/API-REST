@@ -70,6 +70,16 @@ class IngredientController extends Controller
 
         public function destroy(Ingredient $ingredient)
     {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        
+        if ($ingredient->user_id !== $user->id) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+
         $ingredient->delete();
 
         return response()->json([

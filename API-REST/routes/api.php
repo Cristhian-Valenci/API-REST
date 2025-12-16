@@ -28,8 +28,9 @@ Route::get('/ingredients/{id}', [IngredientController::class, 'show']);
 Route::middleware('auth:api')->group(function () {
     Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update']);
     Route::post('/ingredients', [IngredientController::class, 'store']);
+    Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
 });
 
-Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
+
 
 
