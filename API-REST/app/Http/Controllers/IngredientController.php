@@ -7,9 +7,12 @@ use App\Models\Ingredient;
 use App\Http\Requests\Ingredient\StoreIngredientRequest;
 use App\Http\Requests\Ingredient\UpdateIngredientRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class IngredientController extends Controller
 {
+    use AuthorizesRequests;
+    
     public function index(): JsonResponse
     {
         $ingredients = Ingredient::all(); 
@@ -55,6 +58,8 @@ class IngredientController extends Controller
                 'message' => 'Ingredient not found'
             ], 404);
         }
+
+        $this->authorize('update', $ingredient);
 
         $ingredient->update([
             'name' => $request->name,

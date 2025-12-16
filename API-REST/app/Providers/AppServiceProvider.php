@@ -7,12 +7,16 @@ use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
+    protected $policies = [
+        \App\Models\Ingredient::class => \App\Policies\IngredientPolicy::class,
+    ];
+
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        //
+        
     }
 
     /**
@@ -23,4 +27,6 @@ class AppServiceProvider extends ServiceProvider
        Passport::enablePasswordGrant();
        Passport::ignoreRoutes();
     }
+
+     
 }
