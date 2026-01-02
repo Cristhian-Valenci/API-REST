@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Ingredient;
+use App\Models\Cocktail;
 
 class CocktailCreateTest extends TestCase
 {
@@ -14,11 +15,19 @@ class CocktailCreateTest extends TestCase
 
     public function test_guest_cannot_create_cocktail(): void
     {
+        $ingredient = Ingredient::factory()->create();
+
         $payload = [
             'name' => 'Margarita',
             'description' => 'Classic mexican cocktail',
             'elaboration_method' => 'Shake with ice and serve on martini glass',
-            'ingredients' => []
+            'ingredients' => [
+                [
+                    'ingredient_id' => $ingredient->id,
+                    'amount' => 5,
+                    'unit' => 'cl'
+                ]
+            ]
         ];
 
         $response = $this->postJson('/api/cocktails', $payload);
@@ -29,12 +38,20 @@ class CocktailCreateTest extends TestCase
     public function test_authenticated_user_can_create_cocktail()
     {
         $user = User::factory()->create();
+        $ingredient = Ingredient::factory()->create();
+
 
         $payload = [
             'name' => 'Margarita',
             'description' => 'Classic cocktail',
             'elaboration_method' => 'Shake with ice',
-            'ingredients' => []
+            'ingredients' => [
+                [
+                    'ingredient_id' => $ingredient->id,
+                    'amount' => 5,
+                    'unit' => 'cl'
+                ]
+            ]
         ];
 
         $response = $this->actingAs($user, 'api')
@@ -67,7 +84,7 @@ class CocktailCreateTest extends TestCase
         $response->assertStatus(201);
 
         $this->assertDatabaseHas('cocktails', [
-            'name' => 'Margarita',
+            'name' => strtolower('Margarita'),
             'user_id' => $user->id,
         ]);
 
