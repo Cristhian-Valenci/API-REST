@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IngredientController;
+use App\Http\Controllers\CocktailController;
+
 
 
 
@@ -30,6 +32,11 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/ingredients', [IngredientController::class, 'store']);
     Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
 });
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/cocktails', [CocktailController::class, 'store']);
+});
+
 
 
 
