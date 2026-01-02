@@ -9,7 +9,11 @@ class AppServiceProvider extends ServiceProvider
 {
     protected $policies = [
         \App\Models\Ingredient::class => \App\Policies\IngredientPolicy::class,
+        \App\Models\Cocktail::class => \App\Policies\CocktailPolicy::class,
     ];
+
+
+
 
     /**
      * Register any application services.

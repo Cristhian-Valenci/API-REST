@@ -36,6 +36,11 @@ class CocktailUpdateTest extends TestCase
         $response = $this->actingAs($otherUser, 'api')
             ->putJson("/api/cocktails/{$cocktail->id}", [
                 'name' => 'Updated name',
+                'description' => 'New description',
+                'elaboration_method' => 'Shake it',
+                'ingredients' => [
+                    ['ingredient_id' => 1, 'amount' => 50, 'unit' => 'ml']
+                ],
             ]);
 
         $response->assertStatus(403);
@@ -53,7 +58,7 @@ class CocktailUpdateTest extends TestCase
             ->create();
 
         $payload = [
-            'name' => 'Updated Margarita',
+            'name' => 'Updated margarita',
             'description' => 'Updated description',
             'elaboration_method' => 'Updated method',
             'ingredients' => [
@@ -72,7 +77,7 @@ class CocktailUpdateTest extends TestCase
 
         $this->assertDatabaseHas('cocktails', [
             'id' => $cocktail->id,
-            'name' => 'Updated Margarita',
+            'name' => 'Updated margarita',
         ]);
 
         $this->assertDatabaseHas('cocktail_ingredient', [
@@ -123,7 +128,7 @@ class CocktailUpdateTest extends TestCase
 
         $response = $this->actingAs($user, 'api')
             ->putJson("/api/cocktails/{$cocktailToUpdate->id}", [
-                'name' => 'margarita', // duplicado
+                'name' => 'margarita', 
                 'description' => 'Updated',
                 'elaboration_method' => 'Updated',
                 'ingredients' => [
