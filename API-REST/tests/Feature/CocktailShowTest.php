@@ -34,4 +34,15 @@ class CocktailShowTest extends TestCase
             $this->assertArrayHasKey('unit', $ingredient);
         }
     }
+
+   
+    public function test_show_returns_404_for_nonexistent_cocktail()
+    {
+        $response = $this->getJson("/api/cocktails/9999");
+
+        $response->assertStatus(404)
+                 ->assertJson([
+                     'message' => 'Cocktail not found',
+                 ]);
+    }
 }
