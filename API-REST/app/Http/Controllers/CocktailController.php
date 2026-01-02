@@ -71,4 +71,36 @@ class CocktailController extends Controller
         ], 201);
 
     }
+
+    public function show(int $id)
+    {
+        $cocktail = Cocktail::with('ingredients')->find($id);
+
+        if (!$cocktail) {
+            return response()->json([
+                'message' => 'Cocktail not found',
+            ], 404);
+        }
+
+        $ingredients = $cocktail->ingredients->map(function ($ingredient) {
+            return [
+                'id' => $ingredient->id,
+                'name' => $ingredient->name,
+                'amount' => $ingredient->pivot->amount,
+                'unit' => $ingredient->pivot->unit,
+            ];
+        });
+
+        return response()->json([
+            'id' => $cocktail->id,
+            'name' => $cocktail->name,
+            'description' => $cocktail->description,
+            'elaboration_method' => $cocktail->elaboration_method,
+            'user_id' => $cocktail->user_id,
+            'created_at' => $cocktail->created_at,
+            'updated_at' => $cocktail->updated_at,
+            'ingredients' => $ingredients,
+        ], 200);
+    }
+
 }
