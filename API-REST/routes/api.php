@@ -33,6 +33,8 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
 });
 
+Route::get('/cocktails', [CocktailController::class, 'index']);
+Route::get('/cocktails/{id}', [CocktailController::class, 'show']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/cocktails', [CocktailController::class, 'store']);
 });
