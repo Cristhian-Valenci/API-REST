@@ -37,4 +37,15 @@ class CocktailIndexTest extends TestCase
         }
     }
 
+
+    public function test_index_returns_204_when_no_cocktails_exist()
+    {
+        $response = $this->getJson('/api/cocktails');
+
+        $response->assertStatus(204);
+
+        $this->assertEmpty($response->getContent());
+    }
+
+
 }
