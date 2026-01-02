@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cocktail;
 use App\Http\Requests\Cocktail\CreateCocktailRequest;
+use App\Http\Requests\Cocktail\UpdateCocktailRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CocktailController extends Controller
 {
+
+    use AuthorizesRequests;
 
     public function index()
     {
@@ -46,8 +50,9 @@ class CocktailController extends Controller
 
     public function store(CreateCocktailRequest $request)
     {
+
         $cocktail = Cocktail::create([
-            'name' => $request->name,
+            'name' => ucfirst(strtolower($request->name)),
             'description' => $request->description,
             'elaboration_method' => $request->elaboration_method,
             'user_id' => auth()->id(),
@@ -102,5 +107,36 @@ class CocktailController extends Controller
             'ingredients' => $ingredients,
         ], 200);
     }
+
+
+
+    public function update(UpdateCocktailRequest $request, Cocktail $cocktail)
+    {
+        $this->authorize('update', $cocktail);
+
+        $cocktail->update([
+            'name' => ucfirst(strtolower($request->name)),
+            'description' => $request->description,
+            'elaboration_method' => $request->elaboration_method,
+        ]);
+
+        
+        $cocktail->ingredients()->sync([]);
+
+        foreach ($request->ingredients as $ingredient) {
+            $cocktail->ingredients()->attach(
+                $ingredient['ingredient_id'],
+                [
+                    'amount' => $ingredient['amount'],
+                    'unit' => $ingredient['unit'],
+                ]
+            );
+        }
+
+        return response()->json($cocktail, 200);
+    }
+
+
+
 
 }
