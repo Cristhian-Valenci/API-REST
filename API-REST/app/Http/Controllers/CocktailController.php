@@ -8,6 +8,42 @@ use App\Http\Requests\Cocktail\CreateCocktailRequest;
 
 class CocktailController extends Controller
 {
+
+    public function index()
+    {
+        $cocktails = Cocktail::with('ingredients')->get();
+
+        if ($cocktails->isEmpty()) {
+            return response()->json([], 204);
+        }
+
+        $cocktailsArray = $cocktails->map(function($cocktail) {
+            $ingredients = $cocktail->ingredients->map(function($ingredient) {
+                return [
+                    'id' => $ingredient->id,
+                    'name' => $ingredient->name,
+                    'amount' => $ingredient->pivot->amount,
+                    'unit' => $ingredient->pivot->unit,
+                ];
+            });
+            
+            return [
+                'id' => $cocktail->id,
+                'name' => $cocktail->name,
+                'description' => $cocktail->description,
+                'elaboration_method' => $cocktail->elaboration_method,
+                'user_id' => $cocktail->user_id,
+                'created_at' => $cocktail->created_at,
+                'updated_at' => $cocktail->updated_at,
+                'ingredients' => $ingredients,
+            ];
+        });
+
+        return response()->json($cocktailsArray, 200);
+    }
+
+
+
     public function store(CreateCocktailRequest $request)
     {
         $cocktail = Cocktail::create([

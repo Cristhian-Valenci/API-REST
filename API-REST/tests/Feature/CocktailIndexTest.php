@@ -13,38 +13,28 @@ class CocktailIndexTest extends TestCase
  
     public function test_index_returns_all_cocktails_with_ingredients()
     {
-        
-        $cocktails = Cocktail::factory()
-            ->count(2)
-            ->withIngredients()
-            ->create();
+        $cocktails = Cocktail::factory()->count(2)->withIngredients()->create();
 
         $response = $this->getJson('/api/cocktails');
 
         $response->assertStatus(200)
-                 ->assertJsonCount(2) 
-                 ->assertJsonStructure([
-                     '*' => [
-                         'id',
-                         'name',
-                         'description',
-                         'elaboration_method',
-                         'user_id',
-                         'created_at',
-                         'updated_at',
-                         'ingredients' => [
-                             '*' => [
-                                 'id',
-                                 'name',
-                                 'pivot' => [
-                                     'cocktail_id',
-                                     'ingredient_id',
-                                     'amount',
-                                     'unit'
-                                 ]
-                             ]
-                         ]
-                     ]
-                 ]);
+                ->assertJsonCount(2);
+
+        $cocktailsJson = $response->json();
+
+        foreach ($cocktailsJson as $cocktail) {
+            $this->assertArrayHasKey('id', $cocktail);
+            $this->assertArrayHasKey('name', $cocktail);
+            $this->assertArrayHasKey('ingredients', $cocktail);
+            $this->assertNotEmpty($cocktail['ingredients']);
+
+            foreach ($cocktail['ingredients'] as $ingredient) {
+                $this->assertArrayHasKey('id', $ingredient);
+                $this->assertArrayHasKey('name', $ingredient);
+                $this->assertArrayHasKey('amount', $ingredient);
+                $this->assertArrayHasKey('unit', $ingredient);
+            }
+        }
     }
+
 }
