@@ -47,4 +47,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function favoriteCocktails()
+    {
+        return $this->belongsToMany(Cocktail::class, 'cocktail_user_favorites')
+            ->withTimestamps();
+    }
+
 }

@@ -27,4 +27,11 @@ class Cocktail extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'cocktail_user_favorites')
+            ->withTimestamps();
+    }
+
 }
