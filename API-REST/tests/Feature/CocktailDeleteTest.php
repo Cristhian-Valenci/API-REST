@@ -14,18 +14,23 @@ class CocktailDeleteTest extends TestCase
     public function test_owner_can_delete_cocktail()
     {
         $user = User::factory()->create();
+
         $cocktail = Cocktail::factory()->create([
             'user_id' => $user->id,
         ]);
 
-        $response = $this->actingAs($user, 'api')
-                         ->deleteJson("/api/cocktails/{$cocktail->id}");
+        $this->assertEquals($user->id, $cocktail->user_id);
 
-        $response->assertStatus(200);
+        $response = $this->actingAs($user, 'api')
+            ->deleteJson("/api/cocktails/{$cocktail->id}");
+
+        $response->assertStatus(204);
+
         $this->assertDatabaseMissing('cocktails', [
             'id' => $cocktail->id,
         ]);
     }
+
 
     public function test_user_cannot_delete_cocktail_they_do_not_own()
     {

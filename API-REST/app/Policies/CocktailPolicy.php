@@ -45,8 +45,9 @@ class CocktailPolicy
      */
     public function delete(User $user, Cocktail $cocktail): bool
     {
-        return false;
+        return $user->id === $cocktail->user_id;
     }
+
 
     /**
      * Determine whether the user can restore the model.
