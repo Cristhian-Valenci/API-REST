@@ -146,6 +146,34 @@ class CocktailController extends Controller
     }
 
 
+    public function favorite(Cocktail $cocktail)
+    {
+        $user = auth()->user();
+
+        if ($user->favoriteCocktails()->where('cocktail_id', $cocktail->id)->exists()) {
+            return response()->json([
+                'message' => 'Cocktail already favorited'
+            ], 409);
+        }
+
+        $user->favoriteCocktails()->attach($cocktail->id);
+
+        return response()->json([
+            'message' => 'Cocktail favorited'
+        ], 200);
+    }
+
+
+    public function unfavorite(Cocktail $cocktail)
+    {
+        $user = auth()->user();
+
+        $user->favoriteCocktails()->detach($cocktail->id);
+
+        return response()->json([
+            'message' => 'Cocktail unfavorited'
+        ], 200);
+    }
 
 
 
