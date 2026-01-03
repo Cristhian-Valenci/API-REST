@@ -136,6 +136,16 @@ class CocktailController extends Controller
         return response()->json($cocktail, 200);
     }
 
+    public function destroy(Cocktail $cocktail)
+    {
+        $this->authorize('delete', $cocktail);
+
+        $cocktail->delete();
+
+        return response()->json(null, 204);
+    }
+
+
 
 
 
