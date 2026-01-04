@@ -176,5 +176,42 @@ class CocktailController extends Controller
     }
 
 
+    public function search(Request $request)
+    {
+        $query = Cocktail::query()
+            ->with(['ingredients']);
+
+     
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . strtolower($request->name) . '%');
+        }
+
+       
+        if ($request->filled('ingredient')) {
+            $query->whereHas('ingredients', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->ingredient . '%');
+            });
+        }
+
+       
+        if ($request->boolean('favorite')) {
+            if (!auth()->check()) {
+                return response()->json([
+                    'message' => 'No Autorizated',
+                ], 401);
+            }
+
+            $query->whereHas('favoritedBy', function ($q) {
+                $q->where('users.id', auth()->id());
+            });
+        }
+
+        return response()->json([
+            'data' => $query->get(),
+        ]);
+    }
+
+
+
 
 }
