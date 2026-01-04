@@ -52,7 +52,7 @@ class CocktailController extends Controller
     {
 
         $cocktail = Cocktail::create([
-            'name' => ucfirst(strtolower($request->name)),
+            'name' => strtolower($request->name),
             'description' => $request->description,
             'elaboration_method' => $request->elaboration_method,
             'user_id' => auth()->id(),

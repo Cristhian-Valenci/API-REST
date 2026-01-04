@@ -71,7 +71,7 @@ class CocktailSearchTest extends TestCase
         $favorite = Cocktail::factory()->create(['name' => 'Favorite Cocktail']);
         $notFavorite = Cocktail::factory()->create(['name' => 'Normal Cocktail']);
 
-        $user->favorites()->attach($favorite->id);
+        $user->favoriteCocktails()->attach($favorite->id);
 
         $response = $this->actingAs($user, 'api')
             ->getJson('/api/cocktails/search?favorite=1');
