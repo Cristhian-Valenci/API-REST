@@ -206,6 +206,45 @@ class CocktailController extends Controller
             });
         }
 
+
+        if ($request->filled('order')) {
+
+            $direction = $request->get('direction', 'asc');
+
+            
+            if (!in_array($direction, ['asc', 'desc'])) {
+                $direction = 'asc';
+            }
+
+            switch ($request->order) {
+
+                case 'name':
+                    $query->orderBy('name', $direction);
+                    break;
+
+                case 'created_at':
+                    $query->orderBy('created_at', $direction)
+                          ->orderBy('id', $direction);
+                    break;
+
+                case 'favorites_first':
+                    if (!auth()->check()) {
+                        return response()->json([
+                            'message' => 'No Autorizated',
+                        ], 401);
+                    }
+
+                    $query->withCount([
+                        'favoritedBy as is_favorite' => function ($q) {
+                            $q->where('users.id', auth()->id());
+                        }
+                    ])->orderByDesc('is_favorite');
+                    break;
+            }
+        }
+
+
+
         return response()->json([
             'data' => $query->get(),
         ]);

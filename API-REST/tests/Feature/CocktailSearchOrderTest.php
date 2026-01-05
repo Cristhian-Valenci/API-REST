@@ -77,7 +77,7 @@ class CocktailSearchOrderTest extends TestCase
         $favorite = Cocktail::factory()->create(['name' => 'Margarita']);
         $normal = Cocktail::factory()->create(['name' => 'Negroni']);
 
-        $user->favorites()->attach($favorite->id);
+        $user->favoriteCocktails()->attach($favorite->id);
 
         $response = $this->actingAs($user, 'api')
             ->getJson('/api/cocktails/search?order=favorites');
