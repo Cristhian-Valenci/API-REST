@@ -18,11 +18,11 @@ class CocktailIndexTest extends TestCase
         $response = $this->getJson('/api/cocktails');
 
         $response->assertStatus(200)
-                ->assertJsonCount(2);
+                ->assertJsonCount(2, 'data');
 
         $cocktailsJson = $response->json();
 
-        foreach ($cocktailsJson as $cocktail) {
+        foreach ($cocktailsJson['data'] as $cocktail) {
             $this->assertArrayHasKey('id', $cocktail);
             $this->assertArrayHasKey('name', $cocktail);
             $this->assertArrayHasKey('ingredients', $cocktail);
