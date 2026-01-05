@@ -15,37 +15,19 @@ class CocktailController extends Controller
 
     public function index()
     {
-        $cocktails = Cocktail::with('ingredients')->get();
+        
+        $cocktails = Cocktail::with('ingredients')->paginate(16)->withQueryString();
 
-        if ($cocktails->isEmpty()) {
+        if ($cocktails->count() === 0) {
             return response()->json([], 204);
         }
 
-        $cocktailsArray = $cocktails->map(function($cocktail) {
-            $ingredients = $cocktail->ingredients->map(function($ingredient) {
-                return [
-                    'id' => $ingredient->id,
-                    'name' => $ingredient->name,
-                    'amount' => $ingredient->pivot->amount,
-                    'unit' => $ingredient->pivot->unit,
-                ];
-            });
-            
-            return [
-                'id' => $cocktail->id,
-                'name' => $cocktail->name,
-                'description' => $cocktail->description,
-                'elaboration_method' => $cocktail->elaboration_method,
-                'user_id' => $cocktail->user_id,
-                'created_at' => $cocktail->created_at,
-                'updated_at' => $cocktail->updated_at,
-                'ingredients' => $ingredients,
-            ];
+        $cocktails->getCollection()->transform(function ($cocktail) {
+           return $this->formatCocktail($cocktail);
         });
 
-        return response()->json($cocktailsArray, 200);
+        return response()->json($cocktails, 200);
     }
-
 
 
     public function store(CreateCocktailRequest $request)
@@ -87,27 +69,8 @@ class CocktailController extends Controller
             ], 404);
         }
 
-        $ingredients = $cocktail->ingredients->map(function ($ingredient) {
-            return [
-                'id' => $ingredient->id,
-                'name' => $ingredient->name,
-                'amount' => $ingredient->pivot->amount,
-                'unit' => $ingredient->pivot->unit,
-            ];
-        });
-
-        return response()->json([
-            'id' => $cocktail->id,
-            'name' => $cocktail->name,
-            'description' => $cocktail->description,
-            'elaboration_method' => $cocktail->elaboration_method,
-            'user_id' => $cocktail->user_id,
-            'created_at' => $cocktail->created_at,
-            'updated_at' => $cocktail->updated_at,
-            'ingredients' => $ingredients,
-        ], 200);
+        return response()->json($this->formatCocktail($cocktail), 200);
     }
-
 
 
     public function update(UpdateCocktailRequest $request, Cocktail $cocktail)
@@ -179,26 +142,21 @@ class CocktailController extends Controller
     public function search(Request $request)
     {
         $query = Cocktail::query()
-            ->with(['ingredients']);
+            ->with('ingredients');
 
-     
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . strtolower($request->name) . '%');
         }
 
-       
         if ($request->filled('ingredient')) {
             $query->whereHas('ingredients', function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->ingredient . '%');
             });
         }
 
-       
         if ($request->boolean('favorite')) {
             if (!auth()->check()) {
-                return response()->json([
-                    'message' => 'No Autorizated',
-                ], 401);
+                return response()->json(['message' => 'No Authorized'], 401);
             }
 
             $query->whereHas('favoritedBy', function ($q) {
@@ -206,48 +164,76 @@ class CocktailController extends Controller
             });
         }
 
-
+        
         if ($request->filled('order')) {
-
-            $direction = $request->get('direction', 'asc');
-
-            
-            if (!in_array($direction, ['asc', 'desc'])) {
-                $direction = 'asc';
-            }
-
-            switch ($request->order) {
-
-                case 'name':
-                    $query->orderBy('name', $direction);
-                    break;
-
-                case 'created_at':
-                    $query->orderBy('created_at', $direction)
-                          ->orderBy('id', $direction);
-                    break;
-
-                case 'favorites_first':
-                    if (!auth()->check()) {
-                        return response()->json([
-                            'message' => 'No Autorizated',
-                        ], 401);
-                    }
-
-                    $query->withCount([
-                        'favoritedBy as is_favorite' => function ($q) {
-                            $q->where('users.id', auth()->id());
-                        }
-                    ])->orderByDesc('is_favorite');
-                    break;
+            try {
+                $this->applyOrder($query, $request->order, $request->get('direction', 'asc'));
+            } catch (\Exception $e) {
+                return response()->json(['message' => $e->getMessage()], 401);
             }
         }
 
+ 
+        $cocktails = $query->paginate(16)->withQueryString();
+
+        $cocktails->getCollection()->transform(function ($cocktail) {
+           return $this->formatCocktail($cocktail);
+        });
+
+        return response()->json($cocktails, 200);
+    }
+
+    private function applyOrder($query, $order, $direction = 'asc')
+    {
+        if (!in_array($direction, ['asc', 'desc'])) {
+            $direction = 'asc';
+        }
+
+        switch ($order) {
+            case 'name':
+                $query->orderBy('name', $direction);
+                break;
+            case 'created_at':
+                $query->orderBy('created_at', $direction)
+                    ->orderBy('id', $direction);
+                break;
+            case 'favorites_first':
+                if (!auth()->check()) {
+                    throw new \Exception('No Authorized'); 
+                }
+                $query->withCount([
+                    'favoritedBy as is_favorite' => function ($q) {
+                        $q->where('users.id', auth()->id());
+                    }
+                ])->orderByDesc('is_favorite');
+                break;
+        }
+
+        return $query;
+    }
 
 
-        return response()->json([
-            'data' => $query->get(),
-        ]);
+    private function formatCocktail($cocktail)
+    {
+        $ingredients = $cocktail->ingredients->map(function ($ingredient) {
+            return [
+                'id' => $ingredient->id,
+                'name' => $ingredient->name,
+                'amount' => $ingredient->pivot->amount,
+                'unit' => $ingredient->pivot->unit,
+            ];
+        });
+
+        return [
+            'id' => $cocktail->id,
+            'name' => $cocktail->name,
+            'description' => $cocktail->description,
+            'elaboration_method' => $cocktail->elaboration_method,
+            'user_id' => $cocktail->user_id,
+            'created_at' => $cocktail->created_at,
+            'updated_at' => $cocktail->updated_at,
+            'ingredients' => $ingredients,
+        ];
     }
 
 
