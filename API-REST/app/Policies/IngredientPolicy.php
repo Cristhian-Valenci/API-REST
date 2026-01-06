@@ -17,8 +17,21 @@ class IngredientPolicy
         return true;
     }
 
+    public function create(User $user): bool
+    {
+        return $user->hasAnyRole(['admin', 'verified']);
+    }
+
     public function update(User $user, Ingredient $ingredient): bool
     {
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        if (!$user->hasRole('verified')) {
+            return false;
+        }
+
         if ($ingredient->user_id !== $user->id) {
             return false;
         }
@@ -32,6 +45,14 @@ class IngredientPolicy
 
     public function delete(User $user, Ingredient $ingredient): bool
     {
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        if (!$user->hasRole('verified')) {
+            return false;
+        }
+
         if ($ingredient->user_id !== $user->id) {
             return false;
         }

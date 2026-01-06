@@ -36,6 +36,7 @@ class UserController extends Controller
             'email' => $request['email'],
             'password' => Hash::make($request->password), // Es una clase de Laravel que se usa para encriptar la contraseña en la base de dats
         ]);
+        $user->assignRole('verified');
 
         return response()->json($user,201);
     }

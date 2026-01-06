@@ -14,6 +14,7 @@ class CocktailDeleteTest extends TestCase
     public function test_owner_can_delete_cocktail()
     {
         $user = User::factory()->create();
+        $user->assignRole('verified');
 
         $cocktail = Cocktail::factory()->create([
             'user_id' => $user->id,
