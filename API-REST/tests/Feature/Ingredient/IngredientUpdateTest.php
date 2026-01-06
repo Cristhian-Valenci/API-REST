@@ -26,6 +26,7 @@ class IngredientUpdateTest extends TestCase
     public function test_update_ingredient_successfully()
     {
         [$user, $ingredient] = $this->createUserAndIngredient();
+        $user->assignRole('verified');
 
         $payload = ['name' => 'Rum'];
 

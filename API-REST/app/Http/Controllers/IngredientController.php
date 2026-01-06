@@ -49,7 +49,7 @@ class IngredientController extends Controller
         return response()->json($ingredient, 200);
     }
 
-        public function update(UpdateIngredientRequest $request, int $id): JsonResponse
+    public function update(UpdateIngredientRequest $request, int $id): JsonResponse
     {
         $ingredient = Ingredient::find($id);
 
@@ -68,7 +68,7 @@ class IngredientController extends Controller
         return response()->json($ingredient, 200);
     }
 
-        public function destroy(Ingredient $ingredient)
+    public function destroy(Ingredient $ingredient)
     {
         $user = auth('api')->user();
         if (!$user) {

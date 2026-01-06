@@ -16,6 +16,7 @@ class IngredientUpdateAuthorizationTest extends TestCase
     public function test_owner_can_update_ingredient()
     {
         $user = User::factory()->create();
+        $user->assignRole('verified');
         $this->actingAs($user, 'api');
 
         $ingredient = Ingredient::factory()->create([

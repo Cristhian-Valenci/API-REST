@@ -50,6 +50,7 @@ class CocktailUpdateTest extends TestCase
     public function test_owner_can_update_cocktail()
     {
         $user = User::factory()->create();
+        $user->assignRole('verified');
         $ingredient = Ingredient::factory()->create();
 
         $cocktail = Cocktail::factory()
@@ -149,6 +150,7 @@ class CocktailUpdateTest extends TestCase
     public function test_can_update_cocktail_with_same_name()
     {
         $user = User::factory()->create();
+        $user->assignRole('verified');
 
         $cocktail = Cocktail::factory()
             ->for($user)
