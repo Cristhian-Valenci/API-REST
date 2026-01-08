@@ -29,6 +29,7 @@ class AuthController extends Controller
         
         $user = User::create($userData);
 
+        $user->assignRole('verified');
         
         $token = $user->createToken('authToken')->accessToken;
 
