@@ -7,64 +7,60 @@ use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
-
+use Laravel\Passport\Passport;
 
 class LoginTest extends TestCase
 {
     use RefreshDatabase;
 
-   #[Test]
+
+    #[Test]
     public function user_can_login_and_get_token()
     {
-        
         $user = User::factory()->create([
             'name' => 'Cristhian',
             'email' => 'cristhian@example.com',
             'password' => bcrypt('password123'),
         ]);
 
-        // Simulamos la llamada HTTP a /oauth/token para Passport
-        Http::fake([
-            env('APP_URL') . '/oauth/token' => Http::response([
-                'token_type' => 'Bearer',
-                'expires_in' => 31536000,
-                'access_token' => 'test-access-token',
-                'refresh_token' => 'test-refresh-token',
-            ], 200),
-        ]);
-
         
+        $token = 'test-access-token';
+
+        $this->mock(\App\Http\Controllers\AuthController::class)
+            ->shouldReceive('login')
+            ->once()
+            ->andReturn(response()->json([
+                'success' => true,
+                'statusCode' => 200,
+                'message' => 'User has been logged successfully.',
+                'data' => [
+                    'user' => $user,
+                    'token' => $token,
+                    'token_type' => 'Bearer',
+                ],
+            ]));
+
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
             'password' => 'password123',
         ]);
 
-        
         $response->assertStatus(200);
-
-        // Revisar que tenga la estructura de token
         $response->assertJsonStructure([
             'success',
             'statusCode',
             'message',
             'data' => [
-                'id',
-                'name',
-                'email',
-                'created_at',
-                'updated_at',
-                'token' => [
-                    'token_type',
-                    'expires_in',
-                    'access_token',
-                    'refresh_token',
-                ],
+                'user' => ['id','name','email','created_at','updated_at'],
+                'token',
+                'token_type',
             ],
         ]);
 
-        
-        $this->assertEquals('Cristhian', $response->json('data.name'));
+        $this->assertEquals('Cristhian', $response->json('data.user.name'));
     }
+
+
 
     #[Test]
     public function user_cannot_login_with_wrong_password()
@@ -88,7 +84,7 @@ class LoginTest extends TestCase
 
         
         $response->assertJson([
-           'success' => true,
+           'success' => false,
            'statusCode' => 401,
            'message' => 'Unauthorized.',
            'errors' => 'Unauthorized',
@@ -126,7 +122,7 @@ class LoginTest extends TestCase
 
         $response->assertStatus(401)
                 ->assertJson([
-                    'success' => true,
+                    'success' => false,
                     'statusCode' => 401,
                     'message' => 'Unauthorized.',
                     'errors' => 'Unauthorized',

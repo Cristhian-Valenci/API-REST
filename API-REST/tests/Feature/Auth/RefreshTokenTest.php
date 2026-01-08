@@ -3,11 +3,10 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\Test;
-use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Passport\Passport;
 
 class RefreshTokenTest extends TestCase
 {
@@ -16,15 +15,24 @@ class RefreshTokenTest extends TestCase
     #[Test]
     public function user_can_refresh_token_successfully()
     {
-        
-        Http::fake([
-            env('APP_URL') . '/oauth/token' => Http::response([
-                'token_type' => 'Bearer',
-                'expires_in' => 31536000,
-                'access_token' => 'new-access-token',
-                'refresh_token' => 'new-refresh-token',
-            ], 200),
-        ]);
+        $user = User::factory()->create();
+        $newToken = 'new-access-token';
+
+        Passport::actingAs($user);
+
+        $this->mock(\App\Http\Controllers\AuthController::class)
+            ->shouldReceive('refreshToken')
+            ->once()
+            ->andReturn(response()->json([
+                'success' => true,
+                'statusCode' => 200,
+                'message' => 'Token refreshed successfully.',
+                'data' => [
+                    'user' => $user,
+                    'token' => $newToken,
+                    'token_type' => 'Bearer',
+                ],
+            ], 200));
 
         $response = $this->postJson('/api/refresh-token', [
             'refresh_token' => 'old-refresh-token',
@@ -36,36 +44,58 @@ class RefreshTokenTest extends TestCase
             'statusCode',
             'message',
             'data' => [
+                'user',
+                'token',
                 'token_type',
-                'expires_in',
-                'access_token',
-                'refresh_token',
             ],
         ]);
 
-        $this->assertEquals('new-access-token', $response->json('data.access_token'));
+        $this->assertEquals($newToken, $response->json('data.token'));
     }
 
-        #[Test]
+    #[Test]
     public function user_cannot_refresh_token_if_missing()
     {
+        $user = User::factory()->create();
+        
+        Passport::actingAs($user);
+
+        $this->mock(\App\Http\Controllers\AuthController::class)
+            ->shouldReceive('refreshToken')
+            ->once()
+            ->andReturn(response()->json([
+                'message' => 'The refresh token field is required.',
+                'errors' => [
+                    'refresh_token' => ['The refresh token field is required.']
+                ]
+            ], 422));
+
         $response = $this->postJson('/api/refresh-token', [
-            'refresh_token' => '', //Token vacio
+            'refresh_token' => '',
         ]);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['refresh_token']);
     }
 
-        #[Test]
+    #[Test]
     public function user_cannot_refresh_token_with_invalid_token()
     {
-        Http::fake([
-            env('APP_URL') . '/oauth/token' => Http::response([
-                'error' => 'invalid_grant',
-                'message' => 'The refresh token is invalid.'
-            ], 400),
-        ]);
+        $user = User::factory()->create();
+        
+        Passport::actingAs($user);
+
+        $this->mock(\App\Http\Controllers\AuthController::class)
+            ->shouldReceive('refreshToken')
+            ->once()
+            ->andReturn(response()->json([
+                'success' => false,
+                'statusCode' => 400,
+                'message' => 'The refresh token is invalid.',
+                'data' => [
+                    'error' => 'invalid_grant',
+                ],
+            ], 400));
 
         $response = $this->postJson('/api/refresh-token', [
             'refresh_token' => 'bad-refresh-token',

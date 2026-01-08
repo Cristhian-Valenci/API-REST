@@ -25,24 +25,22 @@ class AuthController extends Controller
         $userData = $request->validated();
 
         $userData['email_verified_at'] = now();
+        $userData['password'] = Hash::make($userData['password']);
+        
         $user = User::create($userData);
 
-        $response = Http::post(env('APP_URL') . '/oauth/token', [
-            'grant_type' => 'password',
-            'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
-            'client_secret' => env('PASSPORT_PASSWORD_SECRET'),
-            'username' => $userData['email'],
-            'password' => $userData['password'],
-            'scope' => '',
-        ]);
-
-        $user['token'] = $response->json();
+        
+        $token = $user->createToken('authToken')->accessToken;
 
         return response()->json([
             'success' => true,
             'statusCode' => 201,
             'message' => 'User has been registered successfully.',
-            'data' => $user,
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'Bearer'
+            ],
         ], 201);
     }
 
@@ -50,64 +48,52 @@ class AuthController extends Controller
     {
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
-
-            $response = Http::post(env('APP_URL') . '/oauth/token', [ // LLama al endpoint de Passport, recibimos el token para añadirselo al usuario
-                'grant_type' => 'password',
-                'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
-                'client_secret' => env('PASSPORT_PASSWORD_SECRET'),
-                'username' => $request->email,
-                'password' => $request->password,
-                'scope' => '',
-            ]);
-
-            $user['token'] = $response->json();
+            
+            
+            $token = $user->createToken('authToken')->accessToken;
 
             return response()->json([
                 'success' => true,
                 'statusCode' => 200,
                 'message' => 'User has been logged successfully.',
-                'data' => $user,
+                'data' => [
+                    'user' => $user,
+                    'token' => $token,
+                    'token_type' => 'Bearer'
+                ],
             ], 200);
-        } else {
-            return response()->json([
-                'success' => true,
-                'statusCode' => 401,
-                'message' => 'Unauthorized.',
-                'errors' => 'Unauthorized',
-            ], 401);
         }
+        
+        return response()->json([
+            'success' => false,
+            'statusCode' => 401,
+            'message' => 'Unauthorized.',
+            'errors' => 'Unauthorized',
+        ], 401);
     }
 
 
-    public function refreshToken(RefreshTokenRequest $request): JsonResponse
+    public function refreshToken(): JsonResponse
     {
-        $response = Http::asForm()->post(env('APP_URL') . '/oauth/token', [
-            'grant_type' => 'refresh_token',
-            'refresh_token' => $request->refresh_token,
-            'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
-            'client_secret' => env('PASSPORT_PASSWORD_SECRET'),
-            'scope' => '',
-        ]);
+        $user = auth()->user(); // el usuario autenticado con Bearer token
 
-        $status = $response->status();
-
-        if ($status !== 200) {
-            return response()->json([
-                'success' => false,
-                'statusCode' => $status,
-                'message' => $response->json('message') ?? 'Failed to refresh token.',
-                'data' => $response->json(),
-            ], $status);
-        }
-
+        $token = $user->createToken('authToken')->accessToken;
 
         return response()->json([
             'success' => true,
             'statusCode' => 200,
-            'message' => 'Refreshed token.',
-            'data' => $response->json(),
+            'message' => 'Token refreshed successfully.',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+                'token_type' => 'Bearer'
+            ],
         ], 200);
     }
+
+
+
+
 
         public function me(): JsonResponse
     {
@@ -122,7 +108,7 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function logout(): JsonResponse
+      public function logout(): JsonResponse
     {
         Auth::user()->tokens()->delete();
 

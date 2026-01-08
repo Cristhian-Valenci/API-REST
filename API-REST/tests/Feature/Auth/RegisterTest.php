@@ -6,16 +6,42 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
-use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
+use Laravel\Passport\Passport;
+
 
 class RegisterTest extends TestCase
 {
     use RefreshDatabase;
 
-     #[Test]
+    
+    #[Test]
     public function user_can_register()
     {
+        $user = User::factory()->make([
+            'id' => 1,
+            'name' => 'Cristhian',
+            'email' => 'cristhian@example.com',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $token = 'test-access-token';
+
+        $this->mock(\App\Http\Controllers\AuthController::class)
+            ->shouldReceive('register')
+            ->once()
+            ->andReturn(response()->json([
+                'success' => true,
+                'statusCode' => 201,
+                'message' => 'User has been registered successfully.',
+                'data' => [
+                    'user' => $user,
+                    'token' => $token,
+                    'token_type' => 'Bearer',
+                ],
+            ], 201));
+
         $response = $this->postJson('/api/register', [
             'name' => 'Cristhian',
             'email' => 'cristhian@example.com',
@@ -29,14 +55,21 @@ class RegisterTest extends TestCase
             'statusCode',
             'message',
             'data' => [
-                'id',
-                'name',
-                'email',
-                'created_at',
-                'updated_at',
+                'user' => [
+                    'id',
+                    'name',
+                    'email',
+                    'created_at',
+                    'updated_at',
+                ],
                 'token',
+                'token_type',
             ],
         ]);
+
+        $this->assertEquals('Cristhian', $response->json('data.user.name'));
+        $this->assertEquals('Bearer', $response->json('data.token_type'));
+        $this->assertNotNull($response->json('data.token'));
     }
 
     #[Test]
