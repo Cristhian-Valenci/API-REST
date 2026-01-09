@@ -1,59 +1,84 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+COCTELEANDO API REST
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a project built in Laravel with a REST API architecture so that users can learn about mixology, and also share their knowledge with their peers. They will also be able to publish cocktails they have created so that others can make them anywhere in the world.
 
-## About Laravel
+The technologies used are:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP >= 8.1
+- Laravel 10
+- MySQL
+- Laravel Passport (API authentication)
+- PHPUnit (feature tests)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+INSTALLATION:
+To install it on your computer you should:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Clone the repository:
+git clone <repository-url>
+cd <project-name>
 
-## Learning Laravel
+- Install dependencies:
+composer install
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Configure .env (copy .env.example):
+cp .env.example .env
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Configure the database:
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=database_name
+DB_USERNAME=username
+DB_PASSWORD=password
 
-## Laravel Sponsors
+- Generate the application key:
+php artisan key:generate
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Run migrations and seeders:
+php artisan migrate --seed
 
-### Premium Partners
+- Configure Passport (API authentication):
+php artisan passport:install
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+ USAGE:
+To use it you should:
 
-## Contributing
+- Start the local server:
+php artisan serve
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- The API will be available at: http://127.0.0.1:8000/api
 
-## Code of Conduct
+Authentication:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Laravel Passport is used to authenticate users via personal tokens.
 
-## Security Vulnerabilities
+- Protected endpoints require the header:
+Authorization: Bearer <token>
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Testing:
 
-## License
+- Feature tests are included with PHPUnit:
+php artisan test
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+User functionalities:
+
+- Register and login to obtain an authentication token.
+- Create, read, update, and delete their own cocktails.*
+- Create, read, update, and delete their own ingredients.*
+- Search cocktails by name, ingredient, or favorites.
+- Order cocktails by name, creation date, or prioritize favorites.
+- Mark and unmark cocktails as favorites.
+- View the ingredients of each cocktail with quantity and unit.
+
+* Users can only update and/or delete cocktails they created and ingredients they created but are not used in cocktails created by other users.
+
+Main endpoints:
+
+Method       Route                Description
+POST     /api/register         User registration
+POST     /api/login            Login and obtain token
+GET      /api/cocktails        List cocktails
+POST     /api/cocktails        Create cocktail (auth)
+PUT      /api/cocktails/{id}   Update cocktail (auth)
+DELETE   /api/cocktails/{id}   Delete cocktail (auth)
+GET      /api/cocktails/search Search cocktails by name, ingredient, or favorite (optional auth)
