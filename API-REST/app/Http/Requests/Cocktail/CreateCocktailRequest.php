@@ -55,7 +55,7 @@ class CreateCocktailRequest extends FormRequest
             ],
             'ingredients.*.ingredient_id' => 'required|integer|exists:ingredients,id',
             'ingredients.*.amount' => 'required|numeric|min:0',
-            'ingredients.*.unit' => 'required|in:cl,ml,oz,dash,units,tablespoons',
+            'ingredients.*.unit' => 'required|in:cl,ml,oz,dash,units,spoon',
         ];
     }
 }

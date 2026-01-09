@@ -34,7 +34,7 @@ class CocktailController extends Controller
     {
 
         $cocktail = Cocktail::create([
-            'name' => strtolower($request->name),
+            'name' => ucfirst(strtolower($request->name)),
             'description' => $request->description,
             'elaboration_method' => $request->elaboration_method,
             'user_id' => auth()->id(),
@@ -139,49 +139,54 @@ class CocktailController extends Controller
     }
 
 
-    public function search(Request $request)
-    {
-        $query = Cocktail::query()
-            ->with('ingredients');
+public function search(Request $request)
+{
+    $query = Cocktail::query()
+        ->with('ingredients');
 
-        if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . strtolower($request->name) . '%');
-        }
-
-        if ($request->filled('ingredient')) {
-            $query->whereHas('ingredients', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->ingredient . '%');
-            });
-        }
-
-        if ($request->boolean('favorite')) {
-            if (!auth()->check()) {
-                return response()->json(['message' => 'No Authorized'], 401);
-            }
-
-            $query->whereHas('favoritedBy', function ($q) {
-                $q->where('users.id', auth()->id());
-            });
-        }
-
-        
-        if ($request->filled('order')) {
-            try {
-                $this->applyOrder($query, $request->order, $request->get('direction', 'asc'));
-            } catch (\Exception $e) {
-                return response()->json(['message' => $e->getMessage()], 401);
-            }
-        }
-
- 
-        $cocktails = $query->paginate(16)->withQueryString();
-
-        $cocktails->getCollection()->transform(function ($cocktail) {
-           return $this->formatCocktail($cocktail);
-        });
-
-        return response()->json($cocktails, 200);
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . strtolower($request->name) . '%');
     }
+
+    if ($request->filled('ingredient')) {
+        $query->whereHas('ingredients', function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->ingredient . '%');
+        });
+    }
+
+    if ($request->boolean('favorite')) {
+        if (!auth('api')->check()) {
+            return response()->json(['message' => 'No Authorized'], 401);
+        }
+
+        $query->whereHas('favoritedBy', function ($q) {
+            $q->where('users.id', auth('api')->id());
+        });
+    }
+
+    if ($request->filled('order')) {
+        try {
+            $this->applyOrder(
+                $query,
+                $request->order,
+                $request->get('direction', 'asc')
+            );
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 401);
+        }
+    }
+
+    $cocktails = $query
+        ->paginate(16)
+        ->withQueryString();
+
+    $cocktails->getCollection()->transform(function ($cocktail) {
+        return $this->formatCocktail($cocktail);
+    });
+
+    return response()->json($cocktails, 200);
+}
+
 
     private function applyOrder($query, $order, $direction = 'asc')
     {
@@ -198,15 +203,17 @@ class CocktailController extends Controller
                     ->orderBy('id', $direction);
                 break;
             case 'favorites_first':
-                if (!auth()->check()) {
-                    throw new \Exception('No Authorized'); 
+                if (!auth('api')->check()) {
+                    throw new \Exception('No Authorized');
                 }
+
                 $query->withCount([
                     'favoritedBy as is_favorite' => function ($q) {
-                        $q->where('users.id', auth()->id());
+                        $q->where('users.id', auth('api')->id());
                     }
                 ])->orderByDesc('is_favorite');
                 break;
+
         }
 
         return $query;
