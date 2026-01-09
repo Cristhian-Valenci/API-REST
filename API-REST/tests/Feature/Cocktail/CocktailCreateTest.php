@@ -84,7 +84,7 @@ class CocktailCreateTest extends TestCase
         $response->assertStatus(201);
 
         $this->assertDatabaseHas('cocktails', [
-            'name' => strtolower('Margarita'),
+            'name' => ucfirst(strtolower('Margarita')),
             'user_id' => $user->id,
         ]);
 
