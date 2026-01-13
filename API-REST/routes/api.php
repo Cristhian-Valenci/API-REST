@@ -8,13 +8,14 @@ use App\Http\Controllers\CocktailController;
 
 
 
-
+Route::middleware(['auth:api', 'role:admin'])->group(function () {
 Route::post('/users', [UserController::class, 'store'] );
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']);
 Route::put('/users/{id}', [UserController::class, 'update']);
 Route::patch('/users/{id}', [UserController::class, 'partial']); 
 Route::delete('/users/{id}', [UserController::class, 'destroy']);
+});
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
