@@ -8,90 +8,148 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\User\UserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Requests\User\PartialUpdateUserRequest;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $users = User::all();
-
-        if($users->isEmpty()) {
-            return response()->json([],204);
+        
+        if ($users->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No users found.',
+                'data' => []
+            ], 200);
         }
-
-        return response()->json($users,200);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Users retrieved successfully.',
+            'data' => $users
+        ], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request)
+    public function store(UserRequest $request): JsonResponse
     {
-      
         $user = User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make($request->password), // Es una clase de Laravel que se usa para encriptar la contraseña en la base de dats
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
+        
         $user->assignRole('verified');
-
-        return response()->json($user,201);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'User created successfully.',
+            'data' => $user
+        ], 201);
     }
-    
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
-        $user = User::findOrFail($id); // pongo el OrFail para que si el id es null, no me mande el 200 y mande el 404.
-
-        return response()->json($user,200);
+        $user = User::find($id);
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ], 404);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'User retrieved successfully.',
+            'data' => $user
+        ], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, string $id)
+    public function update(UpdateUserRequest $request, string $id): JsonResponse
     {
-        $user = User::findOrFail($id);
-
+        $user = User::find($id);
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ], 404);
+        }
+        
         $user->update([
-           'name'  => $request->name,
-           'email' => $request->email,
-           'password' => Hash::make($request->password),
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
-
-        return response()->json($user, 200);
-
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'User updated successfully.',
+            'data' => $user
+        ], 200);
     }
 
-    public function partial(PartialUpdateUserRequest $request, string $id)
+    /**
+     * Partial update of the specified resource.
+     */
+    public function partial(PartialUpdateUserRequest $request, string $id): JsonResponse
     {
-        $user = User::findOrFail($id);
-
+        $user = User::find($id);
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ], 404);
+        }
+        
         $data = $request->only(['name', 'email', 'password']);
-
+        
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
-
-         $user->update($data);
-
-         return response()->json($user, 200);
+        
+        $user->update($data);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'User updated successfully.',
+            'data' => $user
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
-        $user = User::findOrFail($id); 
+        $user = User::find($id);
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ], 404);
+        }
+        
         $user->delete();
-
-        return response()->json(null, 204);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'User deleted successfully.'
+        ], 200);
     }
 }

@@ -86,7 +86,7 @@ class LoginTest extends TestCase
         $response->assertJson([
            'success' => false,
            'statusCode' => 401,
-           'message' => 'Unauthorized.',
+           'message' => 'Invalid credentials. Please check your email and password.',
            'errors' => 'Unauthorized',
         ]);
     }
@@ -124,7 +124,7 @@ class LoginTest extends TestCase
                 ->assertJson([
                     'success' => false,
                     'statusCode' => 401,
-                    'message' => 'Unauthorized.',
+                    'message' => 'Invalid credentials. Please check your email and password.',
                     'errors' => 'Unauthorized',
                 ]);
     }

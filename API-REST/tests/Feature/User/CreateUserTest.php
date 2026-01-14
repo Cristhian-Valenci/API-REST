@@ -2,42 +2,58 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use App\Http\Requests\UserRequest;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
+use App\Models\User;
 
 class CreateUserTest extends TestCase
 {
-    use RefreshDatabase; // para aplicar migraciones y que se limpie entre test
+    use RefreshDatabase;
 
-    public function test_user_can_register(): void
+    protected function setUp(): void
     {
-        $data = [
-            'name' => 'prueba',
+        parent::setUp();
+        
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'verified', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'unverified', 'guard_name' => 'web']);
+        
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
+        Role::firstOrCreate(['name' => 'verified', 'guard_name' => 'api']);
+        Role::firstOrCreate(['name' => 'unverified', 'guard_name' => 'api']);
+    }
+
+    public function test_admin_can_create_user(): void
+    {
+        $admin = $this->actingAsAdmin();
+        
+        $response = $this->postJson('/api/users', [
+            'name' => 'Prueba',
             'email' => 'prueba@prueba.com',
-            'password' => 'pruebaprueba',
-            'password_confirmation' => 'pruebaprueba',
-        ];
+            'password' => 'Password123.',
+            'password_confirmation' => 'Password123.',
+        ]);
 
-        $response = $this->postJson('/api/users', $data); // envia Json y laravel interpreta bien la ruta como API
         $response->assertStatus(201);
-        $this->assertDatabaseHas('users', ['email' => 'prueba@prueba.com']);
+        
+        $this->assertDatabaseHas('users', [
+            'email' => 'prueba@prueba.com',
+        ]);
     }
 
-    public function test_user_cannot_register_with_invalid_data(): void
+    public function test_admin_cannot_create_user_with_invalid_data(): void
     {
-       $data = [
-          'name' => '', 
-          'email' => 'invalid-email', 
-          'password' => 'short',
-          'password_confirmation' => 'different'
-        ];
+        $admin = $this->actingAsAdmin();
+        
+        $response = $this->postJson('/api/users', [
+            'name' => '',
+            'email' => 'invalid-email',
+            'password' => 'short',
+            'password_confirmation' => 'different',
+        ]);
 
-       $response = $this->postJson('/api/users', $data);
-
-       $response->assertStatus(422)
-                ->assertJsonValidationErrors(['name', 'email', 'password']);
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors(['name', 'email', 'password']);
     }
-
 }

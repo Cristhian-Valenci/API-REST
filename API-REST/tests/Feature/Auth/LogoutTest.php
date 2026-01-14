@@ -25,7 +25,7 @@ class LogoutTest extends TestCase
                          ->postJson('/api/logout');
 
        
-        $response->assertStatus(204);
+        $response->assertStatus(200);
 
        
         $this->assertCount(0, $user->tokens);
