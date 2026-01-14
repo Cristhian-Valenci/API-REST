@@ -14,8 +14,8 @@ INSTALLATION:
 To install it on your computer you should:
 
 - Clone the repository:
-git clone <repository-url>
-cd <project-name>
+git clone https://github.com/Cristhian-Valenci/API-REST.git
+cd api-rest
 
 - Install dependencies:
 composer install
@@ -55,30 +55,47 @@ Authentication:
 - Protected endpoints require the header:
 Authorization: Bearer <token>
 
+
 Testing:
 
 - Feature tests are included with PHPUnit:
 php artisan test
+(if the test dont work, do: mkdir -p tests/unit)
+
 
 User functionalities:
 
-- Register and login to obtain an authentication token.
-- Create, read, update, and delete their own cocktails.*
-- Create, read, update, and delete their own ingredients.*
-- Search cocktails by name, ingredient, or favorites.
-- Order cocktails by name, creation date, or prioritize favorites.
-- Mark and unmark cocktails as favorites.
-- View the ingredients of each cocktail with quantity and unit.
+- Admin has authorization to do everything on the website.
+- A registered user can create, list, search and sort cocktails. They can only edit or delete cocktails they created themselves, and they can create and list ingredients but can only edit or delete ingredients they created themselves and that are not used in cocktails created by other users.
+- An unregistered user can only view the cocktails and ingredients on the website.
 
-* Users can only update and/or delete cocktails they created and ingredients they created but are not used in cocktails created by other users.
 
-Main endpoints:
+Cocktail Search Endpoint:
 
-Method       Route                Description
-POST     /api/register         User registration
-POST     /api/login            Login and obtain token
-GET      /api/cocktails        List cocktails
-POST     /api/cocktails        Create cocktail (auth)
-PUT      /api/cocktails/{id}   Update cocktail (auth)
-DELETE   /api/cocktails/{id}   Delete cocktail (auth)
-GET      /api/cocktails/search Search cocktails by name, ingredient, or favorite (optional auth)
+- Route: GET /api/cocktails/search
+
+Query parameters:
+- q → string to search by cocktail name or ingredient
+- favorites → true to filter only user's favorite cocktails (requires auth)
+- order → order results by:
+   - name → alphabetically by cocktail name
+   - created_at → by creation date (newest first)
+   - favorites → prioritize the user’s favorite cocktails
+
+How it works:
+- If q is provided, the API searches for cocktails whose name contains q or that include ingredients containing q.
+- If favorites=true and the user is authenticated, only favorite cocktails are returned.
+- The order parameter can be combined with q and favorites to sort results accordingly.
+
+Examples:
+- Search by cocktail name:
+GET /api/cocktails/search?q=margarita
+
+- Search by ingredient:
+GET /api/cocktails/search?q=rum
+
+- Show only favorites (requires authentication):
+GET /api/cocktails/search?favorites=true
+
+- Search by ingredient and order alphabetically:
+GET /api/cocktails/search?q=gin&order=name
