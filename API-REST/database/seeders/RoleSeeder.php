@@ -13,8 +13,13 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::firstOrCreate(['name' => 'admin']);
-        Role::firstOrCreate(['name' => 'verified']);
-        Role::firstOrCreate(['name' => 'unverified']);
+       $roles = ['admin', 'verified', 'unverified'];
+
+        foreach ($roles as $role) {
+            Role::firstOrCreate([
+                'name' => $role,
+                'guard_name' => 'api', // <--- importante para Passport
+            ]);
+        }
     }
 }
