@@ -184,13 +184,20 @@ class CocktailSeeder extends Seeder
                 'user_id' => $admin->id, 
             ]);
 
-            foreach ($c['ingredients'] as $i) {
-                $ingredient = Ingredient::firstOrCreate(['name' => $i['name']]);
-                $cocktail->ingredients()->attach($ingredient->id, [
-                    'amount' => $i['amount'],
-                    'unit' => $i['unit'],
-                ]);
-            }
+        foreach ($c['ingredients'] as $i) {
+            $name = ucfirst(strtolower($i['name']));
+
+            $ingredient = Ingredient::firstOrCreate(
+                ['name' => $name],
+                ['user_id' => $admin->id]
+            );
+
+            $cocktail->ingredients()->attach($ingredient->id, [
+                'amount' => $i['amount'],
+                'unit' => $i['unit'],
+            ]);
+        }
+
         }
     }
 }
