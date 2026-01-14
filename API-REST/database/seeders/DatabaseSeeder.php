@@ -35,5 +35,6 @@ class DatabaseSeeder extends Seeder
         $verified->assignRole('verified');
 
         $this->call(IngredientSeeder::class);
+        $this->call(CocktailSeeder::class);
     }
 }
