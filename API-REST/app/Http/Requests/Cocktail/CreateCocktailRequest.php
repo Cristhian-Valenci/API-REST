@@ -3,22 +3,14 @@
 namespace App\Http\Requests\Cocktail;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CreateCocktailRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        // En create siempre permitimos que un usuario autenticado cree un cocktail
         return auth()->check();
     }
 
-    /**
-     * Prepara los datos antes de la validación.
-     */
     protected function prepareForValidation()
     {
         if ($this->has('name')) {
@@ -28,9 +20,6 @@ class CreateCocktailRequest extends FormRequest
         }
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
         return [
@@ -38,7 +27,7 @@ class CreateCocktailRequest extends FormRequest
                 'required',
                 'string',
                 'max:100',
-                'unique:cocktails,name', 
+                'unique:cocktails,name',
             ],
             'description' => 'required|string',
             'elaboration_method' => 'required|string',
@@ -56,6 +45,31 @@ class CreateCocktailRequest extends FormRequest
             'ingredients.*.ingredient_id' => 'required|integer|exists:ingredients,id',
             'ingredients.*.amount' => 'required|numeric|min:0',
             'ingredients.*.unit' => 'required|in:cl,ml,oz,dash,units,spoon',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'The cocktail name is required.',
+            'name.string' => 'The cocktail name must be a valid text.',
+            'name.max' => 'The cocktail name must not exceed 100 characters.',
+            'name.unique' => 'A cocktail with this name already exists.',
+            'description.required' => 'The description is required.',
+            'description.string' => 'The description must be a valid text.',
+            'elaboration_method.required' => 'The elaboration method is required.',
+            'elaboration_method.string' => 'The elaboration method must be a valid text.',
+            'ingredients.required' => 'At least one ingredient is required.',
+            'ingredients.array' => 'The ingredients must be provided as a list.',
+            'ingredients.min' => 'At least one ingredient is required.',
+            'ingredients.*.ingredient_id.required' => 'Each ingredient must have an ID.',
+            'ingredients.*.ingredient_id.integer' => 'The ingredient ID must be a number.',
+            'ingredients.*.ingredient_id.exists' => 'One or more ingredients do not exist.',
+            'ingredients.*.amount.required' => 'The amount is required for each ingredient.',
+            'ingredients.*.amount.numeric' => 'The amount must be a number.',
+            'ingredients.*.amount.min' => 'The amount must be greater than or equal to 0.',
+            'ingredients.*.unit.required' => 'The unit is required for each ingredient.',
+            'ingredients.*.unit.in' => 'The unit must be one of: cl, ml, oz, dash, units, spoon.',
         ];
     }
 }

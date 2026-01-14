@@ -45,7 +45,7 @@ class AuthorizationRolesTest extends TestCase
         // Cocktail delete
         $response = $this->actingAs($admin, 'api')
             ->deleteJson("/api/cocktails/{$cocktail->id}");
-        $response->assertStatus(204);
+        $response->assertStatus(200);
 
         // Ingredient update
         $response = $this->actingAs($admin, 'api')

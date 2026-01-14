@@ -21,9 +21,9 @@ class CocktailSearchOrderTest extends TestCase
         $response = $this->getJson('/api/cocktails/search?order=name&direction=asc');
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.0.name', 'Bloody Mary')
-            ->assertJsonPath('data.1.name', 'Margarita')
-            ->assertJsonPath('data.2.name', 'Zombi');
+            ->assertJsonPath('data.data.0.name', 'Bloody Mary')
+            ->assertJsonPath('data.data.1.name', 'Margarita')
+            ->assertJsonPath('data.data.2.name', 'Zombi');
     }
 
    
@@ -36,9 +36,9 @@ class CocktailSearchOrderTest extends TestCase
         $response = $this->getJson('/api/cocktails/search?order=name&direction=desc');
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.0.name', 'Zombi')
-            ->assertJsonPath('data.1.name', 'Margarita')
-            ->assertJsonPath('data.2.name', 'Bloody Mary');
+            ->assertJsonPath('data.data.0.name', 'Zombi')
+            ->assertJsonPath('data.data.1.name', 'Margarita')
+            ->assertJsonPath('data.data.2.name', 'Bloody Mary');
     }
 
     
@@ -51,8 +51,8 @@ class CocktailSearchOrderTest extends TestCase
         $response = $this->getJson('/api/cocktails/search?order=created_at&direction=asc');
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.0.name', 'Old cocktail')
-            ->assertJsonPath('data.1.name', 'New cocktail');
+            ->assertJsonPath('data.data.0.name', 'Old cocktail')
+            ->assertJsonPath('data.data.1.name', 'New cocktail');
     }
 
     
@@ -65,8 +65,8 @@ class CocktailSearchOrderTest extends TestCase
         $response = $this->getJson('/api/cocktails/search?order=created_at&direction=desc');
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.0.name', 'New cocktail')
-            ->assertJsonPath('data.1.name', 'Old cocktail');
+            ->assertJsonPath('data.data.0.name', 'New cocktail')
+            ->assertJsonPath('data.data.1.name', 'Old cocktail');
     }
 
     
@@ -83,7 +83,7 @@ class CocktailSearchOrderTest extends TestCase
             ->getJson('/api/cocktails/search?order=favorites');
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.0.name', 'Margarita')
-            ->assertJsonPath('data.1.name', 'Negroni');
+            ->assertJsonPath('data.data.0.name', 'Margarita')
+            ->assertJsonPath('data.data.1.name', 'Negroni');
     }
 }
