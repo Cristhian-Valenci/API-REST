@@ -7,31 +7,32 @@ use Illuminate\Validation\Rule;
 
 class StoreIngredientRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-                                                                       
-             'name' => [
-                  'required',
-                   'string',
-                   'max:100',
-                  'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
-                   Rule::unique('ingredients', 'name'),
-                ],
-            ];
-        
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
+                Rule::unique('ingredients', 'name'),
+            ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'The ingredient name is required.',
+            'name.string' => 'The ingredient name must be a valid text.',
+            'name.max' => 'The ingredient name must not exceed 100 characters.',
+            'name.regex' => 'The ingredient name can only contain letters and spaces.',
+            'name.unique' => 'This ingredient name already exists.',
+        ];
     }
 }

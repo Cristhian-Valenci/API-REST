@@ -35,6 +35,6 @@ class IngredientShowTest extends TestCase
         $response = $this->getJson("/api/ingredients/999");
 
         $response->assertStatus(404)
-                 ->assertJson(['message' => 'Ingredient not found']);
+                 ->assertJson(['message' => 'Ingredient not found.']);
     }
 }

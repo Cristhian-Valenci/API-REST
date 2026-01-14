@@ -33,5 +33,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('Password123.')
         ]);
         $verified->assignRole('verified');
+
+        $this->call(IngredientSeeder::class);
     }
 }

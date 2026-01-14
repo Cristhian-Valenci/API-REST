@@ -48,7 +48,7 @@ class IngredientUpdateTest extends TestCase
                          ]);
 
         $response->assertStatus(404)
-                 ->assertJson(['message' => 'Ingredient not found']);
+                 ->assertJson(['message' => 'Ingredient not found.']);
     }
 
     public function test_update_without_name()

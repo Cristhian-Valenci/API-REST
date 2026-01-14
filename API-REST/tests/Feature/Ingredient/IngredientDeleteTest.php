@@ -25,7 +25,7 @@ class IngredientDeleteTest extends TestCase
 
         $response->assertStatus(200)
                  ->assertJsonFragment([
-                     'message' => 'Ingredient deleted successfully'
+                     'message' => 'Ingredient deleted successfully.'
                  ]);
 
         $this->assertDatabaseMissing('ingredients', [
