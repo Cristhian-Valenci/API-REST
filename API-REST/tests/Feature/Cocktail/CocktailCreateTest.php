@@ -88,7 +88,7 @@ class CocktailCreateTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $cocktailId = $response->json('id');
+        $cocktailId = $response->json('data.id');
 
         $this->assertDatabaseHas('cocktail_ingredient', [
             'cocktail_id' => $cocktailId,

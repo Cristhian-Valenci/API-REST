@@ -25,7 +25,7 @@ class CocktailDeleteTest extends TestCase
         $response = $this->actingAs($user, 'api')
             ->deleteJson("/api/cocktails/{$cocktail->id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200);
 
         $this->assertDatabaseMissing('cocktails', [
             'id' => $cocktail->id,

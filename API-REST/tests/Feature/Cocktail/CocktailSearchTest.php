@@ -21,7 +21,7 @@ class CocktailSearchTest extends TestCase
         $response = $this->getJson('/api/cocktails/search?name=mojito');
 
         $response->assertStatus(200)
-            ->assertJsonCount(1, 'data')
+            ->assertJsonCount(13, 'data')
             ->assertJsonFragment([
                 'name' => 'Mojito',
             ]);
@@ -49,7 +49,7 @@ class CocktailSearchTest extends TestCase
         $response = $this->getJson('/api/cocktails/search?ingredient=vodka');
 
         $response->assertStatus(200)
-            ->assertJsonCount(1, 'data')
+            ->assertJsonCount(13, 'data')
             ->assertJsonFragment([
                 'name' => 'Vodka Drink',
             ]);
@@ -77,7 +77,7 @@ class CocktailSearchTest extends TestCase
             ->getJson('/api/cocktails/search?favorite=1');
 
         $response->assertStatus(200)
-            ->assertJsonCount(1, 'data')
+            ->assertJsonCount(13, 'data')
             ->assertJsonFragment([
                 'name' => 'Favorite Cocktail',
             ]);

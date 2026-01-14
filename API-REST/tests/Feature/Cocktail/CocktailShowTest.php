@@ -20,7 +20,7 @@ class CocktailShowTest extends TestCase
 
         $response->assertStatus(200);
 
-        $cocktailJson = $response->json();
+        $cocktailJson = $response->json('data');
 
         $this->assertArrayHasKey('id', $cocktailJson);
         $this->assertArrayHasKey('name', $cocktailJson);
@@ -42,7 +42,7 @@ class CocktailShowTest extends TestCase
 
         $response->assertStatus(404)
                  ->assertJson([
-                     'message' => 'Cocktail not found',
+                     'message' => 'Cocktail not found.',
                  ]);
     }
 }

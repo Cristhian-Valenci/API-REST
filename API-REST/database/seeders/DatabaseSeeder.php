@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -35,5 +37,6 @@ class DatabaseSeeder extends Seeder
         $verified->assignRole('verified');
 
         $this->call(IngredientSeeder::class);
+        $this->call(CocktailSeeder::class);
     }
 }
