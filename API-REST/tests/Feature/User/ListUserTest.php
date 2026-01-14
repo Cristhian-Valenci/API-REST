@@ -19,7 +19,7 @@ class ListUserTest extends TestCase
         $response = $this->getJson('/api/users');
         
         $response->assertStatus(200)
-                 ->assertJsonCount(3); // 2 usuarios + 1 admin
+                 ->assertJsonCount(3); 
     }
 
     public function test_list_returns_only_admin_when_no_other_users_exist(): void 
@@ -29,6 +29,6 @@ class ListUserTest extends TestCase
         $response = $this->getJson('/api/users');
         
         $response->assertStatus(200)
-                 ->assertJsonCount(1); // Solo el admin
+                 ->assertJsonCount(1, 'data'); // Solo el admin
     }
 }

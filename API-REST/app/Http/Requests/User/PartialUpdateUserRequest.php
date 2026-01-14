@@ -7,19 +7,11 @@ use Illuminate\Validation\Rules\Password;
 
 class PartialUpdateUserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -35,6 +27,16 @@ class PartialUpdateUserRequest extends FormRequest
                     ->numbers()
                     ->symbols(),
             ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.max' => 'The name must not exceed 255 characters.',
+            'email.email' => 'Please provide a valid email address.',
+            'email.unique' => 'This email is already registered.',
+            'password.confirmed' => 'The password confirmation does not match.',
         ];
     }
 }
