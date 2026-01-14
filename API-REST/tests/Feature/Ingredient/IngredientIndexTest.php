@@ -24,7 +24,7 @@ class IngredientIndexTest extends TestCase
         $response = $this->getJson('/api/ingredients');
 
         $response->assertStatus(200)
-                 ->assertJsonCount(2)
+                 ->assertJsonCount(2, 'data')
                  ->assertJsonFragment(['name' => 'Vodka'])
                  ->assertJsonFragment(['name' => 'Gin']);
     }
@@ -36,6 +36,6 @@ class IngredientIndexTest extends TestCase
 
         $response = $this->getJson('/api/ingredients');
 
-        $response->assertStatus(204);       
+        $response->assertStatus(200);       
     }
 }

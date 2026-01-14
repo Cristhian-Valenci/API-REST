@@ -59,7 +59,7 @@ class AuthorizationRolesTest extends TestCase
             ->deleteJson("/api/ingredients/{$ingredient->id}");
         $response->assertStatus(200)
                  ->assertJsonFragment([
-                     'message' => 'Ingredient deleted successfully'
+                     'message' => 'Ingredient deleted successfully.'
                  ]);
     }
 
