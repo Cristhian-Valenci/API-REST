@@ -27,9 +27,9 @@ cp .env.example .env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=database_name
-DB_USERNAME=username
-DB_PASSWORD=password
+DB_DATABASE=api-rest
+DB_USERNAME=root
+DB_PASSWORD=
 
 - Generate the application key:
 php artisan key:generate
