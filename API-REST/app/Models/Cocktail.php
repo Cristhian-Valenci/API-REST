@@ -20,7 +20,8 @@ class Cocktail extends Model
 
     public function ingredients()
     {
-        return $this->belongsToMany(\App\Models\Ingredient::class, 'cocktail_ingredient');
+        return $this->belongsToMany(\App\Models\Ingredient::class, 'cocktail_ingredient')
+                    ->withPivot('amount', 'unit');
     }
 
     public function user()
